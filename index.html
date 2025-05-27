@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥근무시간 계산기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .input-section, .result-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e9ecef;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .textarea-large {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .time-input {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .btn-parse {
+            background: linear-gradient(135deg, #FF6B6B 0%, #ee5a52 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .btn-parse:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .result-table th {
+            background: linear-gradient(135deg, #667eea 0%, #667eea 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .result-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .result-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .result-table tr:hover {
+            background: #e3f2fd;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #FFE082 0%, #FFD54F 100%) !important;
+            font-weight: bold;
+            color: #F57F17;
+        }
+
+        .time-display {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #2E7D32;
+            font-size: 1.1em;
+        }
+
+        .decimal-time {
+            color: #666;
+            font-size: 0.9em;
+            margin-left: 5px;
+        }
+
+        .status-info {
+            background: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .calendar-info {
+            background: #FFF3E0;
+            border-left: 4px solid #FF9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9em;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .editable-input {
+            background: #ede4ce !important;
+            border: 1px solid #bdb260 !important;
+        }
+
+        .auto-calc-indicator {
+            position: relative;
+        }
+
+        .auto-calc-indicator::after {
+            content: "🔄";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .auto-calc-indicator.calculating::after {
+            opacity: 1;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: translateY(-50%) rotate(0deg); }
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+
+
+        @keyframes flashUpdate {
+            0% { background-color: #e8f5e8; }
+            50% { background-color: #c8e6c9; }
+            100% { background-color: transparent; }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥근무시간 계산기 </h1>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title">📝 데이터 입력</h2>
+
+                <div class="input-group">
+                    <label for="rawData">🔍 텍스트 붙여넣기:</label>
+                    <textarea id="rawData" class="textarea-large" placeholder="시작&#10;07:53&#10;종료&#10;당일 총 근무	0.00H&#10;당월 총 근무	116.68/205H&#10;소정근무	116.68/152H&#10;법내연장	0.00H&#10;연장(휴일) 근무	0.00/53"></textarea>
+                </div>
+
+                <button class="btn-parse" onclick="parseData()">🧠 자동 파싱 </button>
+
+                <div class="status-info">
+                    <strong>📊 현재 상태:</strong>
+                    <div id="currentStatus">데이터를 입력하고 파싱 버튼을 클릭하세요</div>
+                </div>
+
+                <div class="calendar-info">
+                    <strong>📅 달력 정보:</strong>
+                    <div id="calendarInfo">로딩 중...</div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="startTime">🕐 오늘 근무 시작시간:</label>
+                        <input type="text" id="startTime" class="time-input editable-input auto-calc-indicator">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="endTime">🕕 오늘 근무 종료시간:</label>
+                        <input type="text" id="endTime" class="time-input editable-input auto-calc-indicator" value="18:30" placeholder="18:30">
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="remainingDays">📅 남은 근무일수:</label>
+                        <input type="number" id="remainingDays" class="editable-input auto-calc-indicator" value="0" min="0">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="dailyHours">⏰ 기본 하루 근무시간:</label>
+                        <input type="text" id="dailyHours" class="time-input editable-input auto-calc-indicator" value="8:00" placeholder="8:00">
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="currentHours">📊 현재 소정근무시간:</label>
+                        <input type="text" id="currentHours" class="time-input editable-input auto-calc-indicator" placeholder="116:41">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="targetHours">🎯 목표 소정근무시간:</label>
+                        <input type="text" id="targetHours" class="time-input editable-input auto-calc-indicator" placeholder="152:00">
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-section">
+                <h2 class="section-title">📊 계산 결과</h2>
+
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th>항목</th>
+                            <th>시:분 (소수점)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultTableBody">
+                        <tr><td colspan="2">데이터를 파싱하거나 값을 입력해주세요</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let isCalculating = false;
+        let calculationTimeout = null;
+
+        // 2025년 공휴일 데이터
+        const holidays2025 = [
+            '2025-01-01', // 신정
+            '2025-01-28', '2025-01-29', '2025-01-30', // 설날 연휴
+            '2025-03-01', // 삼일절
+            '2025-05-05', // 어린이날
+            '2025-05-06', // 대체공휴일
+            '2025-06-03',
+            '2025-06-06', // 현충일
+            '2025-08-15', // 광복절
+            '2025-10-03', // 개천절
+            '2025-10-09', // 한글날
+            '2025-12-25'  // 크리스마스
+        ];
+
+        // 날짜 유틸리티 함수
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function isWeekend(date) {
+            const day = date.getDay();
+            return day === 0 || day === 6;
+        }
+
+        function isHoliday(date) {
+            return holidays2025.includes(formatDate(date));
+        }
+
+        function isWorkingDay(date) {
+            return !isWeekend(date) && !isHoliday(date);
+        }
+
+        // 남은 근무일수 계산
+        function calculateRemainingWorkDays() {
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+
+            const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+
+            let remainingDays = 0;
+            let totalWorkDays = 0;
+            let passedWorkDays = 0;
+
+            for (let d = new Date(currentYear, currentMonth, 1); d <= lastDayOfMonth; d.setDate(d.getDate() + 1)) {
+                if (isWorkingDay(d)) {
+                    totalWorkDays++;
+                    if (d < today) {
+                        passedWorkDays++;
+                    } else if (d > today) {
+                        remainingDays++;
+                    }
+                }
+            }
+
+            return {
+                remaining: remainingDays,
+                total: totalWorkDays,
+                passed: passedWorkDays,
+                today: isWorkingDay(today)
+            };
+        }
+
+        // 시간 변환 함수
+        function hoursToTimeString(hours) {
+            // 음수 처리를 위해 부호 분리
+            const sign = hours < 0 ? -1 : 1;
+            const absHours = Math.abs(hours);
+
+            // 절대값으로 계산
+            const h = Math.floor(absHours);
+            const m = Math.round((absHours - h) * 60);
+
+            // 부호는 시간에만 적용
+            return `${h * sign}:${m.toString().padStart(2, '0')}`;
+        }
+
+        function timeStringToHours(timeStr) {
+            if (!timeStr || timeStr === '') return 0;
+
+            // 18:30, 18.5, 8:00 등 다양한 형식 지원
+            if (timeStr.includes(':')) {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours + (minutes || 0) / 60;
+            } else {
+                return parseFloat(timeStr) || 0;
+            }
+        }
+
+        function parseTimeInput(timeStr) {
+            if (!timeStr) return '';
+
+            // 숫자만 입력된 경우 (예: 1830 -> 18:30)
+            if (/^\d{3,4}$/.test(timeStr)) {
+                if (timeStr.length === 3) {
+                    return timeStr.charAt(0) + ':' + timeStr.slice(1);
+                } else {
+                    return timeStr.slice(0, 2) + ':' + timeStr.slice(2);
+                }
+            }
+
+            // 이미 올바른 형식인 경우
+            if (/^\d{1,2}:\d{2}$/.test(timeStr)) {
+                return timeStr;
+            }
+
+            return timeStr;
+        }
+
+        function calculateWorkHours(startTime, endTime) {
+            const start = timeStringToHours(startTime);
+            const end = timeStringToHours(endTime);
+
+            if (end < start) {
+                return (24 - start) + end;
+            }
+            return end - start;
+        }
+
+        function formatTimeWithDecimal(hours) {
+            const timeStr = hoursToTimeString(hours);
+            return `${timeStr} <span class="decimal-time">(${hours.toFixed(2)}h)</span>`;
+        }
+
+        // 실시간 계산 함수
+        function calculateFromCurrentInputs() {
+            if (isCalculating) return;
+
+            isCalculating = true;
+
+            // 계산 중 표시
+            const indicators = document.querySelectorAll('.auto-calc-indicator');
+            indicators.forEach(indicator => indicator.classList.add('calculating'));
+
+            try {
+                let startTime = document.getElementById('startTime').value;
+                let endTime = document.getElementById('endTime').value;
+                const dailyHoursStr = document.getElementById('dailyHours').value;
+                let currentHoursStr = document.getElementById('currentHours').value;
+                let targetHoursStr = document.getElementById('targetHours').value;
+                const remainingDays = parseInt(document.getElementById('remainingDays').value) || 0;
+
+                // 시간 입력 형식 정리
+                startTime = parseTimeInput(startTime);
+                endTime = parseTimeInput(endTime);
+                currentHoursStr = parseTimeInput(currentHoursStr);
+                targetHoursStr = parseTimeInput(targetHoursStr);
+
+                // 입력 필드 업데이트
+                document.getElementById('startTime').value = startTime;
+                document.getElementById('endTime').value = endTime;
+                document.getElementById('currentHours').value = currentHoursStr;
+                document.getElementById('targetHours').value = targetHoursStr;
+
+                const dailyHours = timeStringToHours(dailyHoursStr);
+                const currentHours = timeStringToHours(currentHoursStr);
+                const targetHours = timeStringToHours(targetHoursStr);
+
+                // 오늘 근무 시간 계산
+                const todayWorkHours = calculateWorkHours(startTime, endTime) - 1 // 점심시간;
+
+                // 계산 수행
+                const todayAfterTotal = currentHours + todayWorkHours;
+                const basicTimeTotal = todayAfterTotal + (remainingDays * dailyHours);
+                const shortage = targetHours - basicTimeTotal;
+                const additionalPerDay = remainingDays > 0 ? shortage / remainingDays : 0;
+                const recommendedDaily = dailyHours + Math.max(0, additionalPerDay);
+
+                // 결과 테이블 업데이트
+                const results = [
+                    ['⏰ 오늘 근무 예정시간', formatTimeWithDecimal(todayWorkHours)],
+                    ['📅 남은 근무일수', `${remainingDays}일 <span class="decimal-time"></span>`],
+                    ['📈 오늘 후 총 근무시간', formatTimeWithDecimal(todayAfterTotal)],
+                    ['🎯 권장 하루 근무시간', formatTimeWithDecimal(recommendedDaily)],
+                    ['⚠️ 기본시간으로 달성시 부족(초과)분', formatTimeWithDecimal(shortage)]
+                ];
+
+                const tbody = document.getElementById('resultTableBody');
+                tbody.innerHTML = '';
+
+                results.forEach((row, index) => {
+                    const tr = document.createElement('tr');
+                    if (row[0].includes('부족')) {
+                        tr.className = 'highlight';
+                    }
+
+                    tr.innerHTML = `
+                        <td>${row[0]}</td>
+                        <td class="time-display">${row[1]}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+
+                // 상태 정보 업데이트
+                const statusDiv = document.getElementById('currentStatus');
+                const progress = targetHours > 0 ? ((currentHours / targetHours) * 100).toFixed(1) : 0;
+                statusDiv.innerHTML = `
+                    <div>📊 진행률: ${progress}% (${hoursToTimeString(currentHours)}/${hoursToTimeString(targetHours)})</div>
+                    <div>⏰ 오늘 근무: ${hoursToTimeString(todayWorkHours)} (${startTime} ~ ${endTime})</div>
+                    <div>🎯 권장 근무: ${hoursToTimeString(recommendedDaily)}/일</div>
+                `;
+
+            } catch (error) {
+                console.error('계산 오류:', error);
+            } finally {
+                // 계산 완료 표시
+                setTimeout(() => {
+                    indicators.forEach(indicator => indicator.classList.remove('calculating'));
+                    isCalculating = false;
+                }, 300);
+            }
+        }
+
+        // 데이터 파싱 함수 (기존)
+        function parseData() {
+            const rawData = document.getElementById('rawData').value;
+
+            // 시작 시간 추출
+            const startMatch = rawData.match(/시작\s*(\d{2}:\d{2})/);
+            if (startMatch) {
+                document.getElementById('startTime').value = startMatch[1];
+            }
+
+            // 소정근무 추출
+            const sojeongMatch = rawData.match(/소정근무\s*([\d.]+)\/([\d.]+)H?/);
+            if (sojeongMatch) {
+                const currentHours = parseFloat(sojeongMatch[1]);
+                const targetHours = parseFloat(sojeongMatch[2]);
+                document.getElementById('currentHours').value = hoursToTimeString(currentHours);
+                document.getElementById('targetHours').value = hoursToTimeString(targetHours);
+            }
+
+            // 달력 계산
+            const workDays = calculateRemainingWorkDays();
+            document.getElementById('remainingDays').value = workDays.remaining;
+
+            // 실시간 계산 실행
+            calculateFromCurrentInputs();
+        }
+
+        // 달력 정보 표시
+        function updateCalendarInfo() {
+            const workDays = calculateRemainingWorkDays();
+            const today = new Date();
+            const calendarDiv = document.getElementById('calendarInfo');
+
+            calendarDiv.innerHTML = `
+                <div>📅 ${today.getFullYear()}년 ${today.getMonth() + 1}월</div>
+                <div>🏢 전체 근무일: ${workDays.total}일</div>
+                <div>✅ 지난 근무일: ${workDays.passed}일</div>
+                <div>📍 오늘: ${workDays.today ? '근무일' : '휴일'}</div>
+                <div>⏳ 남은 근무일: ${workDays.remaining}일</div>
+                <div>🎉 다음 휴일: ${getNextHoliday()}</div>
+            `;
+        }
+
+        function getNextHoliday() {
+            const today = new Date();
+            const todayStr = formatDate(today);
+
+            for (const holiday of holidays2025) {
+                if (holiday > todayStr) {
+                    const date = new Date(holiday);
+                    return `${date.getMonth() + 1}/${date.getDate()}`;
+                }
+            }
+            return '연말';
+        }
+
+        // 실시간 입력 이벤트 설정
+        function setupAutoCalculation() {
+            const autoCalcInputs = document.querySelectorAll('.auto-calc-indicator');
+
+            autoCalcInputs.forEach(input => {
+                // 입력 중 실시간 계산 (디바운싱 적용)
+                input.addEventListener('input', function() {
+                    clearTimeout(calculationTimeout);
+                    calculationTimeout = setTimeout(() => {
+                        calculateFromCurrentInputs();
+                    }, 300); // 300ms 대기 후 계산
+                });
+
+                // 포커스 아웃 시 즉시 계산
+                input.addEventListener('blur', function() {
+                    clearTimeout(calculationTimeout);
+                    calculateFromCurrentInputs();
+                });
+
+                // 엔터 키 시 즉시 계산
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        clearTimeout(calculationTimeout);
+                        this.blur();
+                        calculateFromCurrentInputs();
+                    }
+                });
+            });
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCalendarInfo();
+            setupAutoCalculation();
+
+            // 초기 계산 실행
+            calculateFromCurrentInputs();
+        });
+    </script>
+</body>
+</html>
