@@ -415,8 +415,8 @@
             const h = Math.floor(absHours);
             const m = Math.round((absHours - h) * 60);
 
-            // 부호는 시간에만 적용
-            return `${h * sign}:${m.toString().padStart(2, '0')}`;
+            // 시가 0일 때도 부호를 붙이기 위해 수정
+            return `${sign < 0 ? '-' : ''}${h}:${m.toString().padStart(2, '0')}`;
         }
 
         function timeStringToHours(timeStr) {
