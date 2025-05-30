@@ -419,7 +419,7 @@
                 <textarea id="rawData" class="textarea-large" placeholder="시작&#10;07:53&#10;종료&#10;당일 총 근무	0.00H&#10;당월 총 근무	116.68/205H&#10;소정근무	116.68/152H&#10;법내연장	0.00H&#10;연장(휴일) 근무	0.00/53"></textarea>
             </div>
 
-            <button class="btn-parse" onclick="parseData()">🧠 자동 파싱 </button>
+            <button class="btn-parse" onclick="parseData()">🧠 자동 계산 </button>
 
             <div class="status-info">
                 <strong>📊 현재 상태:</strong>
@@ -443,7 +443,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="endTime">🕕 오늘 근무 종료시간:</label>
+                    <label for="endTime">🕕 오늘 근무 종료예정시간:</label>
                     <input type="text" id="endTime" class="time-input editable-input auto-calc-indicator" value="18:30" placeholder="18:30">
                 </div>
             </div>
@@ -462,7 +462,7 @@
 
             <div class="input-row">
                 <div class="input-group">
-                    <label for="currentHours">📊 현재 소정근무시간 (오늘 제외):</label>
+                    <label for="currentHours">📊 현재 소정근무시간:</label>
                     <input type="text" id="currentHours" class="time-input editable-input auto-calc-indicator" placeholder="116:41">
                 </div>
 
