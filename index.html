@@ -530,7 +530,8 @@
         return !isWeekend(date) && !isHoliday(date);
     }
 
-    function calculateRemainingWorkDays(isTodayWorkConsideredDone = false) {
+    // 남은 근무일수 계산
+    function calculateRemainingWorkDays() {
         const today = new Date();
         const currentMonth = today.getMonth();
         const currentYear = today.getFullYear();
@@ -539,32 +540,23 @@
         let remainingDays = 0;
         let totalWorkDays = 0;
         let passedWorkDays = 0;
-        let isTodayWorkingDay = isWorkingDay(today);
 
         for (let d = new Date(currentYear, currentMonth, 1); d <= lastDayOfMonth; d.setDate(d.getDate() + 1)) {
             if (isWorkingDay(d)) {
                 totalWorkDays++;
-                const dDateString = d.toDateString();
-                const todayDateString = today.toDateString();
-
-                if (d < today && dDateString !== todayDateString) { // 어제까지의 근무일
+                if (d < today) {
                     passedWorkDays++;
-                } else if (dDateString === todayDateString) { // 오늘인 경우
-                    if (isTodayWorkConsideredDone) {
-                        passedWorkDays++; // 오늘 근무가 끝났으면 지난 근무일에 포함
-                    } else {
-                        remainingDays++; // 오늘 근무가 아직 안 끝났으면 남은 근무일에 포함
-                    }
-                } else { // 내일 이후의 근무일
+                } else if (d > today) {
                     remainingDays++;
                 }
             }
         }
+
         return {
             remaining: remainingDays,
             total: totalWorkDays,
             passed: passedWorkDays,
-            today: isTodayWorkingDay
+            today: isWorkingDay(today)
         };
     }
 
@@ -886,18 +878,17 @@
     }
 
 
-    // 페이지 로드 시 초기화
     document.addEventListener('DOMContentLoaded', function() {
         updateCalendarInfo();
         setupAutoCalculation();
         setupHowToUseToggle(); // 사용방법 토글 초기화 추가
 
+        calculateFromCurrentInputs();
         const currentHoursLabel = document.querySelector('label[for="currentHours"]');
         if (currentHoursLabel) {
             currentHoursLabel.innerHTML = '📊 현재 소정근무시간 (오늘 제외):';
         }
         // 초기 계산 실행
-        calculateFromCurrentInputs();
     });
 </script>
 </body>
