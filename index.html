@@ -751,7 +751,7 @@
             tbody.innerHTML = '';
             results.forEach(row => {
                 const tr = document.createElement('tr');
-                if (row[0].includes('기본시간으로 달성시') && shortage > 0.0083) {
+                if (row[0].includes('기본시간으로 달성시')) {
                     tr.className = 'highlight';
                 }
                 tr.innerHTML = `<td>${row[0]}</td><td class="time-display">${row[1]}</td>`;
