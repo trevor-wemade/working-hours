@@ -533,16 +533,41 @@
         let excludedHours = 0;
 
         excludeRanges.forEach(range => {
-            const overlapStart = Math.max(start, range.start);
-            const overlapEnd = Math.min(end, range.end);
+            // 근무시간과 제외시간대의 겹치는 부분만 계산
+            let workStart = start;
+            let workEnd = end;
 
-            if (overlapStart < overlapEnd) {
-                excludedHours += overlapEnd - overlapStart;
+            // 자정을 넘는 경우 처리
+            if (end < start) {
+                // 자정 전 부분 체크
+                if (range.start >= workStart || range.end <= 24) {
+                    const overlapStart = Math.max(workStart, range.start);
+                    const overlapEnd = Math.min(24, range.end);
+                    if (overlapStart < overlapEnd) {
+                        excludedHours += overlapEnd - overlapStart;
+                    }
+                }
+                // 자정 후 부분 체크
+                if (range.start >= 0 || range.end <= workEnd) {
+                    const overlapStart = Math.max(0, range.start);
+                    const overlapEnd = Math.min(workEnd, range.end);
+                    if (overlapStart < overlapEnd) {
+                        excludedHours += overlapEnd - overlapStart;
+                    }
+                }
+            } else {
+                // 일반적인 경우 (자정을 넘지 않는 경우)
+                const overlapStart = Math.max(workStart, range.start);
+                const overlapEnd = Math.min(workEnd, range.end);
+                if (overlapStart < overlapEnd) {
+                    excludedHours += overlapEnd - overlapStart;
+                }
             }
         });
 
         return Math.max(0, totalHours - excludedHours);
     }
+
 
     function formatTimeWithDecimal(hours) {
         const timeStr = hoursToTimeString(hours);
@@ -581,7 +606,7 @@
         if (sojeongMatch) {
             const currentHours = parseFloat(sojeongMatch[1]);
             const targetHours = parseFloat(sojeongMatch[2]);
-            
+
             // 종료시간이 있으면 이미 당일 근무시간이 포함되어 있으므로 그대로 사용
             document.getElementById('currentHours').value = hoursToTimeString(currentHours);
             document.getElementById('targetHours').value = hoursToTimeString(targetHours);
@@ -634,7 +659,7 @@
 
             // 종료시간이 있는지 확인 (이미 근무가 끝났는지)
             const hasEndTime = endTime && startTime && endTime !== '18:30'; // 기본값이 아닌 실제 종료시간
-            
+
             let todayAfterTotal;
             if (hasEndTime) {
                 // 종료시간이 있으면 현재 소정근무시간에 이미 오늘 근무가 포함되어 있음
