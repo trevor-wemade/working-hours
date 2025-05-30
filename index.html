@@ -403,9 +403,6 @@
                     계산기 페이지의 <strong>'🔍 텍스트 붙여넣기:' 입력란에 붙여넣으세요.</strong>
                 </p>
                 <img src="https://i.postimg.cc/k4gsdP9W/20250530-152607-1.gif" alt="사용방법 안내 GIF">
-                <p style="margin-top: 15px; font-size: 0.9em; color: #555;">
-                    파싱된 필드의 값을 직접 수정해도 계산 결과에 반영됩니다
-                </p>
             </div>
         </div>
     </div>
@@ -743,18 +740,18 @@
             const recommendedDaily = dailyHours + (shortage > 0 ? Math.max(0, additionalPerDay) : 0);
 
             const results = [
-                ['⏰ 오늘 근무 산정시간', formatTimeWithDecimal(todayWorkHours)],
+                ['⏰ 오늘 근무 예정시간', formatTimeWithDecimal(todayWorkHours)],
                 ['📅 남은 근무일수', `<span class="number-display">${remainingDays}일</span>`],
-                ['📈 오늘 포함 총 예상 근무시간', formatTimeWithDecimal(todayAfterTotal)],
-                ['🎯 일 평균 권장 근무시간', formatTimeWithDecimal(recommendedDaily)],
-                ['⚠️ 목표까지 남은 시간 (기본 근무 시)', formatShortageWithStatus(shortage)]
+                ['📈 오늘 후 총 근무시간', formatTimeWithDecimal(todayAfterTotal)],
+                ['🎯 권장 하루 근무시간', formatTimeWithDecimal(recommendedDaily)],
+                ['⚠️ 기본시간으로 달성시', formatShortageWithStatus(shortage)]
             ];
 
             const tbody = document.getElementById('resultTableBody');
             tbody.innerHTML = '';
             results.forEach(row => {
                 const tr = document.createElement('tr');
-                if (row[0].includes('남은 시간') && shortage > 0.0083) {
+                if (row[0].includes('기본시간으로 달성시') && shortage > 0.0083) {
                     tr.className = 'highlight';
                 }
                 tr.innerHTML = `<td>${row[0]}</td><td class="time-display">${row[1]}</td>`;
@@ -766,14 +763,11 @@
             const limitedProgress = Math.min(100, Math.max(0, progress)).toFixed(1);
 
             let todayStatusText = "예정 근무";
-            if(startTimeStr && startTimeStr.trim() !== '' && endTimeStr && endTimeStr.trim() !== '' && timeStringToHours(endTimeStr) > 0 && calculateWorkHours(startTimeStr, endTimeStr) > 0) {
-                todayStatusText = "산정 근무";
-            }
-
+            
             statusDiv.innerHTML = `
                 <div>📊 진행률: ${limitedProgress}% (${hoursToTimeString(todayAfterTotal)}/${hoursToTimeString(targetHours)})</div>
-                <div>⏰ 오늘 ${todayStatusText}: ${hoursToTimeString(todayWorkHours)} (${startTimeStr || '미입력'} ~ ${endTimeStr || '미입력'})</div>
-                <div>🎯 일 평균 권장: ${hoursToTimeString(recommendedDaily)}/일</div>
+                <div>⏰ 오늘 근무${todayStatusText}: ${hoursToTimeString(todayWorkHours)} (${startTimeStr || '미입력'} ~ ${endTimeStr || '미입력'})</div>
+                <div>🎯 권장 근무: ${hoursToTimeString(recommendedDaily)}/일</div>
             `;
 
         } catch (error) {
@@ -808,7 +802,6 @@
             <div>📅 ${today.getFullYear()}년 ${today.getMonth() + 1}월</div>
             <div>🏢 이달 총 근무일: ${info.total}일</div>
             <div>✅ 지난 근무일: ${info.passed}일</div>
-            <div>📍 오늘: ${info.today ? '근무일' : '휴일'}</div>
             <div>⏳ 남은 근무일: ${info.remaining}일</div>
             <div>🎉 다음 휴일: ${getNextHoliday()}</div>
         `;
@@ -887,7 +880,7 @@
         calculateFromCurrentInputs();
         const currentHoursLabel = document.querySelector('label[for="currentHours"]');
         if (currentHoursLabel) {
-            currentHoursLabel.innerHTML = '📊 현재 소정근무시간 (오늘 제외):';
+            currentHoursLabel.innerHTML = '📊 현재 소정근무시간:';
         }
         // 초기 계산 실행
     });
