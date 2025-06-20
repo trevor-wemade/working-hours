@@ -584,10 +584,6 @@
 </div>
 
 <script>
-    // 전역 변수
-    let isCalculating = false;
-    let calculationTimeout = null;
-
     // 2025년 공휴일 데이터
     const holidays2025 = [
         '2025-01-01', // 신정
@@ -1048,8 +1044,6 @@
         setupAutoCalculation();     // Setup input listeners
         setupHowToUseToggle();      // Setup "how to use" toggle
 
-        // Initial calculation based on default/empty values
-        calculateFromCurrentInputs();
     });
 </script>
 </body>
