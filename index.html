@@ -10,7 +10,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔥근무시간 계산기 (Final Complete)</title>
+    <title>🔥근무시간 계산기 (시프티용)</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -156,11 +156,11 @@
     <div class="how-to-use-section">
         <div class="how-to-use-container">
             <button id="toggleHowToUse" class="how-to-use-toggle">
-                💡 사용방법 (필독) <span class="toggle-arrow">▼</span>
+                💡 사용방법 <span class="toggle-arrow">▼</span>
             </button>
             <div id="howToUseContent" class="how-to-use-content">
                 <p>
-                    <strong>1. 텍스트 복사:</strong> 근태 관리 페이지에서 날짜와 시간이 포함된 리스트 전체를 복사하세요.<br>
+                    <strong>1. 텍스트 복사:</strong> 시프티 > 출퇴근기록 > 한달치 근무기록 검색 > 전체 리스트 복사<br>
                     <strong>2. 붙여넣기:</strong> 아래 입력창에 붙여넣으세요.<br>
                     <strong>3. 휴가 추가:</strong> 리스트에 없는 휴가(연차/반차)는 아래 버튼으로 추가하면 근무 시간으로 인정됩니다.
                 </p>
@@ -173,9 +173,10 @@
             <h2 class="section-title">📝 데이터 입력</h2>
             <div class="input-group">
                 <label for="rawData">🔍 텍스트 붙여넣기:</label>
-                <textarea id="rawData" class="textarea-large" placeholder="11/25 (화)09:44 - 09:44 - 18:30...&#10;11/24 (월)09:17 - 18:35... 8시간 13분"></textarea>
+                <textarea id="rawData" class="textarea-large" placeholder="11/25 (화)	09:44 - 18:37	09:44 - 18:30	(WM)BE1팀(개발1실)	3차승인		67분	7시간 46분	0분	0분	+ 7분
+11/24 (월)	09:17 - 18:35	09:17 - 18:35	(WM)BE1팀(개발1실)	3차승인		65분	8시간 13분	0분	0분	0분"></textarea>
             </div>
-            <button class="btn-parse" onclick="startInitialCalculation()">🧠 자동 분석 및 계산</button>
+            <button class="btn-parse" onclick="startInitialCalculation()">🧠 계산</button>
 
             <div class="status-info">
                 <strong>📊 분석 상태:</strong>
@@ -187,7 +188,7 @@
             </div>
 
             <div class="input-group">
-                <label>➕ 리스트에 없는 휴가 시간 추가 (단순 합산):</label>
+                <label>➕ 휴가 시간 추가 (단순 합산):</label>
                 <div class="leave-control-container">
                     <div class="leave-control">
                         <span>연차 (+8시간)</span>
@@ -272,7 +273,7 @@
     const holidays2025 = [
         '2025-01-01', '2025-01-28', '2025-01-29', '2025-01-30', '2025-03-01',
         '2025-05-05', '2025-05-06', '2025-06-03', '2025-06-06', '2025-08-15',
-        '2025-10-03', '2025-10-06', '2025-10-07', '2025-10-08', '2025-10-09', '2025-12-25'
+        '2025-10-03', '2025-10-06', '2025-10-07', '2025-10-08', '2025-10-09', '2025-12-25, 2025-12-31'
     ];
 
     let leaveCounts = { annual: 0, half: 0, quarter: 0 };
